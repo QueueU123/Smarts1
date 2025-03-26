@@ -552,7 +552,7 @@
     <!-- Main Section -->
     <section class="home-section">
         <div class="home-content">
-            <h1>WELCOME ADMIN [NAME]!</h1>
+            <h1>WELCOME ADMIN <span th:text="${username}"></span>!</h1>
             <ul class="shortcuts-icon">
                 <div class="shortcut">
                     <a href="projectsAdmin">
@@ -571,6 +571,7 @@
                         <i class='bx bx-receipt'></i>
                         <span class="links_name">Invoice</span>
                     </a>
+                </div>
             </ul>
             <ul class="shortcuts-icon">
                 <div class="shortcut">
@@ -592,7 +593,6 @@
                     </a>
                 </div>
             </ul>
-        </div>
         </div>
     </section>
 

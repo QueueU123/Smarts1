@@ -545,7 +545,7 @@
     <!-- Main Section -->
     <section class="home-section">
         <div class="home-content">
-            <h1>WELCOME STAFF [NAME]!</h1>
+            <h1>WELCOME STAFF <span th:text="${username}"></span>!</h1>
             <ul class="shortcuts-icon">
                 <div class="shortcut">
                     <a href="myProjectExestaff">
@@ -564,6 +564,8 @@
                         <i class='bx bx-receipt'></i>
                         <span class="links_name">Invoice</span>
                     </a>
+
+                </div>
             </ul>
             <ul class="shortcuts-icon" style="width: 85%;">
                 <div class="shortcut">

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 
 @Controller
-public class UserAdminController {
+public class  UserAdminController {
 
     @Autowired
     private UserRepository userRepository;

@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Captcha Page</title>
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
-        rel="stylesheet">
+            href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
+            rel="stylesheet">
     <style>
-         body {
+        body {
             margin: 0;
             padding: 0;
             font-family: 'Numans', sans-serif;
@@ -241,40 +241,82 @@
 </head>
 
 <body>
-    <header>
-        <div class="smarts-logo">
-            <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#login">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+<header>
+    <div class="smarts-logo">
+        <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
+    </div>
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#login">Login</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <main>
-        <section class="captcha-section" id="home">
-            <div class="captcha-container">
-                <h2>CAPTCHA</h2>
-                <div class="captcha-animation">
-                    <lottie-player src="https://lottie.host/65a899ea-91de-4aa0-ae40-1729a7e9eb7c/M5vUC7O8W9.json" background="transparent" speed="1" loop autoplay></lottie-player>
-                </div>
-                <h3 class="captcha-code">VE123ASD</h3>
-                <input type="text" class="captcha-input" placeholder="Type Here">
-                <a href="homepageAdmin"> <!-- add an if else status on to determin if admin or exestaff then redirect to their respective homepage if clicked or regenerate the code if wrong input -->
-                    <button class="captcha-button">VERIFY</button>
-                </a>
+<main>
+    <section class="captcha-section" id="home">
+        <div class="captcha-container">
+            <h2>CAPTCHA</h2>
+            <div class="captcha-animation">
+                <lottie-player src="https://lottie.host/65a899ea-91de-4aa0-ae40-1729a7e9eb7c/M5vUC7O8W9.json" background="transparent" speed="1" loop autoplay></lottie-player>
             </div>
-        </section>
-    </main>
+            <h3 class="captcha-code" id="captchaText"></h3>
+            <input type="hidden" id="userRole" th:value="${userRole}">
+            <input type="text" id="captchaInput" class="captcha-input" placeholder="Type Here">
+            <button class="captcha-button" onclick="verifyCaptcha()">VERIFY</button>
+            <p id="captchaMessage" style="color: red;"></p>
+        </div>
+    </section>
+</main>
 
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+<footer>
+    <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+</footer>
 
-    <!-- Lottie player script -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@1.0.4/dist/lottie-player.js"></script>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@1.0.4/dist/lottie-player.js"></script>
+<script>
+    let captchaCode = generateCaptcha();
+    function generateCaptcha() {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let code = "";
+        for (let i = 0; i < 6; i++) {
+            code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById("captchaText").textContent = code;
+        return code;
+    }
+
+    function verifyCaptcha() {
+        const input = document.getElementById("captchaInput").value.toUpperCase();
+        const message = document.getElementById("captchaMessage");
+        const userRoleElement = document.getElementById("userRole");
+
+        if (!userRoleElement) {
+            console.error("Error: userRole element not found!");
+            return;
+        }
+        const userRole = userRoleElement.value.trim().toLowerCase();
+        if (input === captchaCode) {
+            switch (userRole) {
+                case "admin":
+                    window.location.href = "/homepageAdmin";
+                    break;
+                case "staff":
+                    window.location.href = "/homepageExestaff";
+                    break;
+                case "main contractor":
+                    window.location.href = "/homepageGencon";
+                    break;
+                default:
+                    console.error("Invalid role detected:", userRole);
+                    //window.location.href = "/";
+            }
+        } else {
+            message.textContent = "Incorrect CAPTCHA. Please try again!";
+            captchaCode = generateCaptcha();
+            document.getElementById("captchaInput").value = "";
+        }
+    }
+</script>
 </body>
-
 </html>
