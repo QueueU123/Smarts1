@@ -545,7 +545,7 @@
     <!-- Main Section -->
     <section class="home-section">
         <div class="home-content">
-            <h1>WELCOME STAFF <span th:text="${username}"></span>!</h1>
+            <h1>WELCOME STAFF <span style="font-family: inherit;" th:text="${username}"></span>!</h1>
             <ul class="shortcuts-icon">
                 <div class="shortcut">
                     <a href="myProjectExestaff">
@@ -595,13 +595,13 @@
         let closeBtn = document.querySelector("#btn");
         let searchBtn = document.querySelector(".bx-search");
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
+//        closeBtn.addEventListener("click", () => {
+        //            sidebar.classList.toggle("open");
+        //        });
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
+        //searchBtn.addEventListener("click", () => {
+        //  sidebar.classList.toggle("open");
+        //});
     </script>
 </body>
 
