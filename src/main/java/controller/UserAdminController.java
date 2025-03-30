@@ -19,7 +19,7 @@ public class  UserAdminController {
     private UserRepository userRepository;
 
     @GetMapping("/userAdmin/getUsers")
-    @ResponseBody // ✅ Returns JSON data
+    @ResponseBody // Returns JSON data
     public List<User> getAllUsers() {
         return userRepository.findAll(); //Fetch all users from PostgreSQL
     }
@@ -31,7 +31,7 @@ public class  UserAdminController {
         return userRepository.save(user); //Saves to "Accounts" table
     }
 
-    @PutMapping("/userAdmin/updateUser/{user_id}") // ✅ Updates an existing user
+    @PutMapping("/userAdmin/updateUser/{user_id}") // Updates an existing user
     @ResponseBody
     public User updateUser(@PathVariable int user_id, @RequestBody User updatedUser) {
         Optional<User> existingUser = userRepository.findById(user_id);
@@ -43,7 +43,7 @@ public class  UserAdminController {
             user.setPermissions(updatedUser.getPermissions());
             user.setProject(updatedUser.getProject());
             user.setStatus(updatedUser.getStatus());
-            return userRepository.save(user); // ✅ Updates record in PostgreSQL
+            return userRepository.save(user); // Updates record in PostgreSQL
         }
         return null; // Handle error if user is not found
     }
@@ -51,6 +51,6 @@ public class  UserAdminController {
     @GetMapping("/userAdmin")
     public String userAdminPage(Model model) {
         model.addAttribute("users", userRepository.findAll());
-        return "userAdmin"; // ✅ Make sure "userAdmin.html" exists
+        return "userAdmin"; // sure "userAdmin.html" exists
     }
 }
