@@ -22,7 +22,7 @@ public class ProjectsAdminController {
         return projectRepository.findAll();
     }
 
-    @PostMapping("/projectSAdmin/addProject")
+    @PostMapping("/projectsAdmin/addProject")
     @ResponseBody
     public Project addProject(@RequestBody Project project) {
         return projectRepository.save(project);
