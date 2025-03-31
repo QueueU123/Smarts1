@@ -19,14 +19,17 @@ public class ProjectsAdminController {
     @GetMapping("/projectsAdmin/getProjects")
     @ResponseBody
     public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+        return projectRepository.findByProjectstatusIgnoreCaseNot("archived");
     }
+
+
 
     @PostMapping("/projectsAdmin/addProject")
     @ResponseBody
     public Project addProject(@RequestBody Project project) {
         return projectRepository.save(project);
     }
+
 
     @PutMapping("/projectsAdmin/updateProject/{project_id}")
     @ResponseBody
