@@ -841,95 +841,16 @@
                 <div class="inventory-table">
                     <table id="inventoryTable">
                         <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Material</th>
-                                <th>Stock Available</th>
-                                <th>Cost Per Unit</th>
-                                <th class="actions">Actions</th>
-                            </tr>
+                        <tr>
+                            <th>Category</th>
+                            <th>Material</th>
+                            <th>Stock Available</th>
+                            <th>Cost Per Unit</th>
+                            <th class="actions">Actions</th>
+                        </tr>
                         </thead>
-                        <tbody>
-                            <tr data-category="building">
-                                <td>Building</td>
-                                <td>Concrete Blocks</td>
-                                <td>500 pcs</td>
-                                <td>PHP 50</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Beams</td>
-                                <td>50 pcs</td>
-                                <td>PHP 500</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="wood-and-timber">
-                                <td>Wood and Timber</td>
-                                <td>Plywood Sheets</td>
-                                <td>200 pcs</td>
-                                <td>PHP 300</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="plumbing">
-                                <td>Plumbing</td>
-                                <td>PVC Pipes</td>
-                                <td>100 meters</td>
-                                <td>PHP 100</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="electrical">
-                                <td>Electrical</td>
-                                <td>Copper Wires</td>
-                                <td>150 rolls</td>
-                                <td>PHP 400</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="roofing">
-                                <td>Roofing</td>
-                                <td>Corrugated Sheets</td>
-                                <td>80 pcs</td>
-                                <td>PHP 600</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="insulation">
-                                <td>Insulation</td>
-                                <td>Fiberglass Rolls</td>
-                                <td>50 rolls</td>
-                                <td>PHP 700</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
-                            <tr data-category="finishing">
-                                <td>Finishing</td>
-                                <td>Paint Buckets</td>
-                                <td>100 cans</td>
-                                <td>PHP 1,200</td>
-                                <td class="actions">
-                                    <span class="edit-icon">✏️</span>
-                                    <span class=" delete-icon">❌</span>
-                                </td>
-                            </tr>
+                        <tbody id="inventoryData">
+                        <!-- Rows will be loaded dynamically -->
                         </tbody>
                     </table>
                     <button id="addRowBtn" style="display:none;">Add Row</button>
@@ -943,7 +864,7 @@
         <div class="out-of-stock">
             <button id="out-of-stock">!</button>
         </div>
-        
+
         <!-- Modal Notification -->
         <div id="modal" class="modal">
             <div class="modal-content">
@@ -959,299 +880,194 @@
         <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
     </footer>
 
+    <!-- Updated Script to Load, Add, Edit Inventory -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const outOfStockButton = document.getElementById("out-of-stock");
-            const overlay = document.getElementById("overlay");
-            const modal = document.getElementById("modal");
-            const closeModal = modal.querySelector(".close");
-
-            // Open modal when the button is clicked
-            outOfStockButton.addEventListener("click", () => {
-                modal.style.display = "block";
-                overlay.style.display = "block";
-            });
-
-            // Close the modal when the error icon is clicked
-            closeModal.addEventListener("click", () => {
-                modal.style.display = "none";
-                overlay.style.display = "none";
-            });
-
-            // Close the modal if the user clicks outside of it
-            window.onclick = (event) => {
-                if (event.target === overlay) {
-                    modal.style.display = "none";
-                    overlay.style.display = "none";
-                }
-            };
-            
+            const inventoryTable = document.getElementById("inventoryTable");
+            const inventoryData = document.getElementById("inventoryData");
             const editBtn = document.getElementById("editBtn");
             const addRowBtn = document.getElementById("addRowBtn");
-            const inventoryTable = document.getElementById("inventoryTable");
-            const rows = inventoryTable.querySelectorAll("tbody tr");
-            const toggleArchiveBtn = document.getElementById("toggleArchiveBtn");
             const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-            const inventoryTable_ = document.querySelector('#inventoryTable');
 
-            // Function to filter rows based on selected categories
-            function filterTable() {
-                const selectedCategories = Array.from(categoryCheckboxes)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => checkbox.value);
+            let isEditMode = false;
 
-                const rows = inventoryTable.querySelectorAll("tbody tr");
+            function loadInventory() {
+                fetch('/generalInventory/getInventory')
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("Received inventory data:", data); // 👈 Confirm data
+                        inventoryData.innerHTML = "";
 
-                rows.forEach(row => {
-                    const category = row.getAttribute('data-category');
-                    const isArchived = row.classList.contains("archived");
-                    const isArchivedVisible = toggleArchiveBtn.textContent === "Hide Archived Rows";
+                        data.forEach(item => {
+                            const row = document.createElement("tr");
+                            const category = item.material_category || "uncategorized";
+                            row.setAttribute("data-category", item.material_category.toLowerCase().replace(/\s+/g, '-'));
+                            row.setAttribute("data-id", item.material_id);
 
-                    if (selectedCategories.length === 0 || selectedCategories.includes(category)) {
-                        if (isArchived && !isArchivedVisible) {
-                            row.style.display = 'none';
-                        } else {
-                            row.style.display = '';
-                        }
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            }
-
-            // Add event listeners to category checkboxes
-            categoryCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', filterTable);
-            });
+                            row.innerHTML = `
+    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_category}</td>
+    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_name}</td>
+    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_stock}</td>
+    <td ${isEditMode ? 'contenteditable="true"' : ''}>${item.material_price}</td>
+    <td class="actions"></td>
+`;
 
 
 
-            // Function to toggle archived rows visibility
-            function toggleArchivedRows() {
-                const rows = inventoryTable.querySelectorAll('tbody tr.archived');
-                let areArchivedRowsVisible = false;
 
-                // Check if any archived row is currently visible
-                rows.forEach(row => {
-                    if (row.style.display !== 'none') {
-                        areArchivedRowsVisible = true;
-                    }
-                });
+                            inventoryData.appendChild(row);
+                        });
 
-                // Toggle visibility based on the current state
-                rows.forEach(row => {
-                    row.style.display = areArchivedRowsVisible ? 'none' : ''; 
-                });
-
-                // Update button text based on the new state
-                toggleArchiveBtn.textContent = areArchivedRowsVisible
-                    ? "Show Archived Rows"
-                    : "Hide Archived Rows";
-            }
-
-
-            // Toggle archived rows visibility when the button is clicked
-            toggleArchiveBtn.addEventListener('click', toggleArchivedRows);
-
-
-            // Function to toggle the visibility of the last column
-            function toggleLastColumn(show) {
-                const editIcons = inventoryTable.querySelectorAll(".edit-icon");
-                const deleteIcons = inventoryTable.querySelectorAll(".delete-icon");
-                const actionsColumn = inventoryTable.querySelectorAll("td.actions, th:last-child");
-
-                actionsColumn.forEach(col => {
-                    col.style.display = show ? 'inline-block' : 'none';
-                });
-
-                editIcons.forEach(icon => icon.style.display = 'inline-block');
-                deleteIcons.forEach(icon => icon.style.display = 'inline-block');
-
-                addRowBtn.style.display = show ? 'inline-block' : 'none';
-                editBtn.textContent = show ? "Save" : "Edit";
-            }
-
-            // Handle the "Edit" button click event
-            editBtn.addEventListener("click", () => {
-                const rowsInEditingMode = Array.from(inventoryTable.querySelectorAll(".edit-icon"))
-                    .some(icon => icon.textContent === "💾");
-
-                if (rowsInEditingMode) {
-                    alert("Please save or discard changes for all rows before proceeding.");
-                    return;
-                }
-
-                const isEditing = editBtn.textContent === "Edit";
-                toggleLastColumn(isEditing);
-
-                const rows = inventoryTable.querySelectorAll("tbody tr");
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll("td");
-                    cells.forEach((cell, index) => {
-                        if (index < 4) {
-                            cell.setAttribute("contenteditable", "false");
-                            const input = cell.querySelector("input");
-                            if (input) {
-                                input.setAttribute("disabled", "true");
-                            }
-                        }
+                        applyCategoryFilter();
                     });
+            }
+
+
+            function applyCategoryFilter() {
+                const selected = Array.from(categoryCheckboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                const rows = inventoryTable.querySelectorAll("tbody tr");
+
+                rows.forEach(row => {
+                    const cat = row.getAttribute("data-category");
+                    row.style.display = selected.length === 0 || selected.includes(cat) ? "" : "none";
                 });
-            });
+            }
 
-            inventoryTable.addEventListener("click", (e) => {
-                if (e.target.classList.contains("edit-icon")) {
-                    const row = e.target.closest("tr");
+            function saveAllEditedRows() {
+                const rows = inventoryData.querySelectorAll("tr");
+
+                rows.forEach(row => {
+                    const id = row.getAttribute("data-id");
                     const cells = row.querySelectorAll("td");
-                    const isEditing = e.target.textContent === "💾";
 
-                    if (isEditing) {
-                        if (hasMissingValues(row)) {
-                            alert("Please fill in all values before saving.");
-                            return;
-                        }
+                    const materialCategory = cells[0].textContent.trim();
+                    const materialName = cells[1].textContent.trim();
+                    const materialStock = parseInt(cells[2].textContent.trim());
+                    const materialPrice = parseFloat(cells[3].textContent.trim());
 
-                        const dropdown = row.querySelector("select");
-                        if (dropdown) {
-                            const selectedOption = dropdown.options[dropdown.selectedIndex].text;
-                            cells[0].textContent = selectedOption;
-                        }
-
-                        cells.forEach((cell, index) => {
-                            if (index < 4) {
-                                const input = cell.querySelector("input");
-                                if (input) {
-                                    cell.textContent = input.value;
-                                }
-                            }
-                        });
-                        e.target.textContent = "✏️";
-                    } else {
-                        cells.forEach((cell, index) => {
-                            if (index < 4) {
-                                const text = cell.textContent;
-                                if (index === 0) {
-                                    const dropdown = document.createElement("select");
-                                    const options = ['Building', 'Steel and Metals', 'Wood and Timber', 'Plumbing', 'Electrical', 'Roofing', 'Insulation', 'Finishing'];
-                                    options.forEach(optionText => {
-                                        const option = document.createElement("option");
-                                        option.value = optionText;
-                                        option.textContent = optionText;
-                                        if (optionText === text) {
-                                            option.selected = true;
-                                        }
-                                        dropdown.appendChild(option);
-                                    });
-                                    cell.innerHTML = "";
-                                    cell.appendChild(dropdown);
-                                } else {
-                                    cell.innerHTML = `<input type="text" value="${text}" required />`;
-                                }
-                            }
-                        });
-                        e.target.textContent = "💾";
-                    }
-                }
-
-                if (e.target.classList.contains("delete-icon")) {
-                    const row = e.target.closest("tr");
-
-                    if (row.querySelector('.edit-icon').textContent === "💾") {
-                        alert("You cannot archive a row while it is in editing mode.");
+                    // ✅ Basic validation
+                    if (!materialCategory || !materialName || isNaN(materialStock) || isNaN(materialPrice)) {
+                        alert("Please fill all fields correctly.");
                         return;
                     }
 
-                    if (row.classList.contains("archived")) {
-                        // Unarchive the row
-                        row.classList.remove("archived");
+                    const payload = {
+                        material_category: materialCategory,
+                        material_name: materialName,
+                        material_stock: materialStock,
+                        material_price: materialPrice
+                    };
+
+                    // 🔁 Update or Add based on presence of ID
+                    if (id) {
+                        payload.material_id = parseInt(id);
+                        fetch(`/generalInventory/updateInventory/${id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        }).then(res => {
+                            if (!res.ok) console.error("❌ Update failed", payload);
+                        });
                     } else {
-                        // Archive the row
-                        row.classList.add("archived");
-                        row.style.display = "none";
+                        fetch(`/generalInventory/addInventory`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        })
+                            .then(res => {
+                                if (!res.ok) throw new Error("❌ Failed to add item.");
+                                return res.json();
+                            })
+                            .then(newItem => {
+                                console.log("✅ New item added:", newItem);
+                                loadInventory(); // Refresh the whole table to get assigned ID
+                            })
+                            .catch(err => {
+                                console.error("❌ Error during add:", err);
+                            });
                     }
-                }
-
-            });
-
-            addRowBtn.addEventListener("click", () => {
-                const newRow = document.createElement("tr");
-
-                const dropdown = document.createElement("select");
-                const options = ['Building', 'Steel and Metals', 'Wood and Timber', 'Plumbing', 'Electrical', 'Roofing', 'Insulation', 'Finishing'];
-                options.forEach(optionText => {
-                    const option = document.createElement("option");
-                    option.value = optionText.toLowerCase().replace(/\s+/g, '-');
-                    option.textContent = optionText;
-                    dropdown.appendChild(option);
                 });
-
-                newRow.innerHTML = `
-                    <td></td> <!-- Empty cell for dropdown -->
-                    <td><input type="text"/></td>
-                    <td><input type="text" /></td>
-                    <td><input type="text" /></td>
-                    <td class="actions">
-                        <span class="edit-icon" style="display: inline-block;">✏️</span>
-                        <span class="delete-icon" style="display: inline-block;">❌</span>
-                    </td>
-                `;
-
-                newRow.querySelector("td").appendChild(dropdown);
-                inventoryTable.querySelector("tbody").appendChild(newRow);
-
-                newRow.setAttribute('data-category', dropdown.value);
-
-                dropdown.addEventListener('change', () => {
-                    newRow.setAttribute('data-category', dropdown.value);
-                });
-
-                filterTable();
-
-                const isEditing = editBtn.textContent === "Save";
-
-                if (isEditing) {
-                    const editIcon = newRow.querySelector(".edit-icon");
-                    editIcon.textContent = "💾";
-                }
-
-                const actionsColumn = newRow.querySelector(".actions");
-                actionsColumn.style.display = "inline-block";
-                actionsColumn.querySelectorAll(".edit-icon, .delete-icon").forEach(icon => {
-                    icon.style.display = "inline-block";
-                });
-            });
-            filterTable();
-
-            function hasMissingValues(row) {
-                const cells = row.querySelectorAll("td");
-                for (let i = 0; i < cells.length; i++) {
-                    const cell = cells[i];
-                    if (i < 4) {
-                        if (cell.querySelector("input")) {
-                            const input = cell.querySelector("input");
-                            if (!input.value.trim()) {
-                                return true;
-                            }
-                        } else if (!cell.textContent.trim()) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
             }
 
-        });
 
-        let sidebar = document.querySelector(".sidebar");
-        let cancelModalBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
 
-        cancelModalBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
+            function addNewMaterialRow() {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td contenteditable="true">New Category</td>
+                    <td contenteditable="true">New Material</td>
+                    <td contenteditable="true">0</td>
+                    <td contenteditable="true">0.0</td>
+                    <td class="actions">
+                        <span class="submit-new">✅</span>
+                    </td>
+                `;
+                inventoryData.appendChild(row);
+            }
 
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+            inventoryData.addEventListener("click", e => {
+                if (e.target.classList.contains("submit-new")) {
+                    const row = e.target.closest("tr");
+                    const cells = row.querySelectorAll("td");
+
+                    const category = cells[0].textContent.trim();
+                    const material = cells[1].textContent.trim();
+                    const stock = parseInt(cells[2].textContent.trim());
+                    const price = parseFloat(cells[3].textContent.trim());
+
+                    if (!category || !material || isNaN(stock) || isNaN(price)) {
+                        alert("Please enter valid data for all fields.");
+                        return;
+                    }
+
+                    const payload = {
+                        material_category: category,
+                        material_name: material,
+                        material_stock: stock,
+                        material_price: price
+                    };
+
+                    console.log("Adding item:", payload);
+
+                    fetch('/generalInventory/addInventory', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                        .then(res => {
+                            if (!res.ok) throw new Error("Failed to add item.");
+                            return res.json();
+                        })
+                        .then((newItem) => {
+                            console.log("New item added and returned from backend:", newItem);
+                            loadInventory(); // reloads the table to include the new item with ID
+                        })
+                        .catch(err => {
+                            console.error("Error adding inventory:", err);
+                            alert("Failed to add item. Check console for details.");
+                        });
+
+                }
+            });
+
+            editBtn.addEventListener("click", () => {
+                if (isEditMode) {
+                    // save all changes
+                    saveAllEditedRows();
+                }
+                isEditMode = !isEditMode;
+                editBtn.textContent = isEditMode ? "Save" : "Edit";
+                addRowBtn.style.display = isEditMode ? "inline-block" : "none";
+                loadInventory();
+            });
+
+            addRowBtn.addEventListener("click", addNewMaterialRow);
+            categoryCheckboxes.forEach(cb => cb.addEventListener("change", applyCategoryFilter));
+
+            loadInventory();
         });
     </script>
 </body>
