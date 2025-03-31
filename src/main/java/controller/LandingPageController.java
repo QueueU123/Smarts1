@@ -53,4 +53,9 @@ public class LandingPageController {
     public String showInvalidPasswordPage() {
         return "invalidPassword"; // redirection
     }
+
+    @GetMapping("/confirmLogout")
+    public String ConfirmLogout(){
+            return "confirmLogout";
+        }
 }
