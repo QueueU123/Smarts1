@@ -1,7 +1,9 @@
 package controller;
 
+import entity.Project;
 import entity.User;
 import org.springframework.web.bind.annotation.*;
+import repository.ProjectRepository;
 import repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,9 @@ public class  UserAdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @GetMapping("/userAdmin/getUsers")
     @ResponseBody // Returns JSON data
