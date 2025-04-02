@@ -36,4 +36,13 @@ public class Project {
 
     @Column(name = "downpayment")
     private double downpayment;
+
+    @Column(name = "company_name", length = 50)
+    private String companyname;
+
+    @Column(name = "company_location", length = 50)
+    private String companyLocation;
+
+    @Column(name = "company_contact", length = 50)
+    private String companycontact;
 }

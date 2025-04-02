@@ -999,6 +999,15 @@
                 <label for="projectName">Project Name</label>
                 <input type="text" id="projectName" name="projectName" placeholder="Enter project name" required>
 
+                <label for="companyName">Company Name</label>
+                <input type="text" id="companyName" name="companyName" placeholder="Enter company name" required>
+
+                <label for="companyLocation">Company Location</label>
+                <input type="text" id="companyLocation" name="companyLocation" placeholder="Enter location" required>
+
+                <label for="companyContact">Company Contact No.</label>
+                <input type="text" id="companyContact" name="companyContact" placeholder="Enter contact number" required>
+
                 <label for="status">Status</label>
                 <select id="status" name="status" required>
                     <option value="">Select Status</option>
@@ -1373,6 +1382,11 @@
         const contractAmount = parseFloat(document.getElementById('contractAmount').value);
         const downpayment = parseFloat(document.getElementById('downpayment').value);
 
+        // dd the 3 new lines right here:
+        const companyName = document.getElementById('companyName').value;
+        const companyLocation = document.getElementById('companyLocation').value;
+        const companyContact = document.getElementById('companyContact').value;
+
         if (!projectName || !status || !startDate || !endDate || !clientName ||
             isNaN(contractAmount) || isNaN(downpayment)) {
             alert("Please fill out all fields correctly.");
@@ -1397,6 +1411,9 @@
 
         const newProject = {
             projectname: projectName,
+            companyname: companyName,
+            companyLocation: companyLocation,
+            companycontact: companyContact,
             projectstatus: status,
             projectstart: startDate,
             projectend: endDate,
