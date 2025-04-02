@@ -189,6 +189,26 @@
             line-height: 20px;
         }
 
+        #projectsTable tbody tr:hover {
+            background-color: #F9744B;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px #f9744b, 0 0 20px #f9744b;
+            transition: all 0.3s ease;
+            transform: scale(1.01);
+        }
+
+
+        #projectsTable tbody tr {
+            transition: transform 0.2s ease;
+        }
+
+        #projectsTable tbody tr:hover {
+            transform: scale(1.01);
+        }
+
+
+
         .sidebar .nav-list {
             margin-top: 20px;
             height: 100%;
@@ -1170,6 +1190,10 @@
                         row.appendChild(startCell);
                         row.appendChild(endCell);
                         row.appendChild(clientCell);
+
+                        row.addEventListener('click', () => {
+                            window.location.href = 'projectManagementAdmin';
+                        });
 
                         tableBody.appendChild(row);
                     });
