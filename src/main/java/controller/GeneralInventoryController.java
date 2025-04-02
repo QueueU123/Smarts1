@@ -42,6 +42,10 @@ public class GeneralInventoryController {
         return "error"; // fallback if user not found or invalid role
     }
 
+    @GetMapping("inventoryAdmin")
+    public String AdminInventory() {
+        return "inventoryAdmin";
+    }
     // REST: Get inventory as JSON
     @GetMapping("/generalInventory/getInventory")
     @ResponseBody
@@ -94,6 +98,7 @@ public class GeneralInventoryController {
                 inventory.setMaterialName(updatedInventory.getMaterialName());
                 inventory.setMaterialStock(updatedInventory.getMaterialStock());
                 inventory.setMaterialPrice(updatedInventory.getMaterialPrice());
+                inventory.setMaterialArchived(updatedInventory.getMaterialArchived()); // ✅ Apply archive status
 
                 System.out.println("Updating inventory ID: " + id);
                 return inventoryRepository.save(inventory);
@@ -105,4 +110,23 @@ public class GeneralInventoryController {
             throw new RuntimeException("Update failed: " + e.getMessage());
         }
     }
+
+
+    // ✅ REST: Archive or Unarchive inventory item
+    @PutMapping("/generalInventory/archiveInventory/{id}")
+    @ResponseBody
+    public String archiveInventory(@PathVariable int id) {
+        Optional<Inventory> optionalInventory = inventoryRepository.findById(id);
+        if (optionalInventory.isPresent()) {
+            Inventory inventory = optionalInventory.get();
+            Boolean currentStatus = inventory.getMaterialArchived() != null ? inventory.getMaterialArchived() : false;
+            inventory.setMaterialArchived(!currentStatus); // Toggle archive status
+            inventoryRepository.save(inventory);
+            System.out.println("✔️ Toggled archive for ID: " + id + " → Now: " + !currentStatus);
+            return "Archived toggled for ID: " + id;
+        } else {
+            throw new RuntimeException("Inventory item not found with ID: " + id);
+        }
+    }
+
 }

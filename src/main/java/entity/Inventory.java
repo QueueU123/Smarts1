@@ -33,4 +33,8 @@ public class Inventory {
     @Column(name = "material_price")
     @JsonProperty("material_price")
     private float materialPrice;
+
+    @Column(name = "material_archived")
+    @JsonProperty("material_archived")
+    private Boolean materialArchived;  // <-- ✅ New field for archive status
 }
