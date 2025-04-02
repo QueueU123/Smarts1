@@ -37,11 +37,18 @@ public class LandingPageController {
             return "redirect:/invalidPassword"; // Redirect if password is incorrect
         }
 
-        // Store user in session temporarily until CAPTCHA is completed
-        session.setAttribute("authenticatedUser", user);
+        // ✅ Store everything needed
+        session.setAttribute("authenticatedUser", user);  // for CAPTCHA (if still used)
+        session.setAttribute("username", user.getUsername()); // ✅ Needed by getCurrentUser
+        session.setAttribute("role", user.getRole()); // ✅ For conditional redirect or display
 
         // Redirect to CAPTCHA verification page
         return "redirect:/captcha";
+    }
+
+    @GetMapping("/projectManagementAdmin")
+    public String projectManagementAdminPage() {
+        return "projectManagementAdmin"; // redirection
     }
 
     @GetMapping("/invalidUsername")

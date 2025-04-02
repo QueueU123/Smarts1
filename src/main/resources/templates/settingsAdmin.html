@@ -703,7 +703,7 @@
             <h1>Settings</h1>
             <div class="card">
                 <div class="sidebar_settings">
-                    <h3>Hello Admin 1!</h3>
+                    <h3 id="greeting-header">Hello [User]!</h3>
                     <div class="tab active" onclick="toggleTab('profile')">Profile</div>
                     <div class="tab" onclick="toggleTab('help')">Help and Support</div>
                 </div>
@@ -713,27 +713,30 @@
                             <div class="profile-icon">
                                 <i class="bx bx-user-circle"></i>
                             </div>
+                            <!-- Username and Email in Profile Header -->
                             <div class="profile-info">
-                                <h2>Admin_1</h2>
-                                <p class="email">coastcervando@gmail.com</p>
+                                <h2 id="profile-username">[Placeholder Username]</h2>
+                                <p class="email" id="profile-email">[Placeholder Email]</p>
+
                             </div>
                         </div>
+                        <!-- Profile Fields -->
                         <div class="profile-details">
                             <div class="profile-detail-item">
                                 <label>First Name</label>
-                                <div class="detail-value">Coast</div>
+                                <div class="detail-value" data-field="firstName">[Placeholder]</div>
                             </div>
                             <div class="profile-detail-item">
                                 <label>Last Name</label>
-                                <div class="detail-value">Cervando</div>
+                                <div class="detail-value" data-field="lastName">[Placeholder]</div>
                             </div>
                             <div class="profile-detail-item">
                                 <label>Phone Number</label>
-                                <div class="detail-value">09123456789</div>
+                                <div class="detail-value" data-field="phone">[Placeholder]</div>
                             </div>
                             <div class="profile-detail-item">
                                 <label>Email</label>
-                                <div class="detail-value">coastcervando@gmail.com</div>
+                                <div class="detail-value" data-field="email">[Placeholder]</div>
                             </div>
                         </div>
                     </div>
@@ -741,8 +744,7 @@
                         <h2>FAQ</h2>
                         <p>
                             <span>Question 1: How do I add a new project?</span>
-                            Answer: Navigate to the Projects page, click "Add Project," and fill in the required
-                            details.
+                            Answer: Navigate to the Projects page, click "Add Project," and fill in the required details.
                         </p>
                         <p>
                             <span>Question 2: What should I do if my account is locked?</span>
@@ -750,8 +752,7 @@
                         </p>
                         <p>
                             <span>Question 3: How do I reset my password?</span>
-                            Answer: Go to the Login Page and click "Forgot Password" or contact the administrator if
-                            you're unable to access your account.
+                            Answer: Go to the Login Page and click "Forgot Password" or contact the administrator if you're unable to access your account.
                         </p>
 
                         <h2>TROUBLESHOOTING TIPS</h2>
@@ -774,11 +775,10 @@
 
                         <h2>CONTACT SUPPORT</h2>
                         <p>
-                            Email: admin1@gmail.com <br>
-                            Phone: 09123456789
+                            Email: <span id="support-email">[Loading...]</span><br>
+                            Phone: <span id="support-phone">[Loading...]</span>
                         </p>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -794,18 +794,8 @@
         let closeBtn = document.querySelector("#btn");
         let searchBtn = document.querySelector(".bx-search");
 
-        closeBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
-
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
-
-        // Settings toggle
         function toggleTab(tabId) {
             document.querySelectorAll('.content').forEach(content => content.classList.remove('active'));
-
             document.getElementById(tabId).classList.add('active');
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelector(`.tab[onclick="toggleTab('${tabId}')"]`).classList.add('active');
@@ -817,9 +807,31 @@
             }
         }
 
-        window.onload = function () {
+        document.addEventListener("DOMContentLoaded", function () {
             toggleTab('profile');
-        }
+
+            fetch('/getCurrentUser')
+                .then(response => response.json())
+                .then(user => {
+                    if (user) {
+                        document.querySelector('.profile-info h2').innerText = user.username || '[No Username]';
+                        document.querySelector('.profile-info .email').innerText = user.email || '[No Email]';
+                        document.querySelector('.detail-value[data-field="firstName"]').innerText = user.firstName || '[Not Set]';
+                        document.querySelector('.detail-value[data-field="lastName"]').innerText = user.lastName || '[Not Set]';
+                        document.querySelector('.detail-value[data-field="phone"]').innerText = user.phone || '[Not Set]';
+                        document.querySelector('.detail-value[data-field="email"]').innerText = user.email || '[Not Set]';
+
+
+                        const greeting = `Hello ${user.role} ${user.firstName}!`;
+                        document.getElementById('greeting-header').innerText = greeting;
+
+                        // Contact Support
+                        document.getElementById('support-email').innerText = user.email || '[No Email]';
+                        document.getElementById('support-phone').innerText = user.phone || '[No Phone]';
+                    }
+                })
+                .catch(err => console.error('Failed to load user info:', err));
+        });
     </script>
 </body>
 

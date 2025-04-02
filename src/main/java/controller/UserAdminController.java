@@ -1,7 +1,10 @@
 package controller;
 
+import entity.Project;
 import entity.User;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
+import repository.ProjectRepository;
 import repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,9 @@ public class  UserAdminController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProjectRepository projectRepository;
+
     @GetMapping("/userAdmin/getUsers")
     @ResponseBody // Returns JSON data
     public List<User> getAllUsers() {
@@ -25,13 +31,13 @@ public class  UserAdminController {
     }
 
 
-    @PostMapping("/userAdmin/addUser") //Matches JS fetch call
+    @PostMapping("/userAdmin/addUser")
     @ResponseBody
     public User addUser(@RequestBody User user) {
-        return userRepository.save(user); //Saves to "Accounts" table
+        return userRepository.save(user);
     }
 
-    @PutMapping("/userAdmin/updateUser/{user_id}") // Updates an existing user
+    @PutMapping("/userAdmin/updateUser/{user_id}")
     @ResponseBody
     public User updateUser(@PathVariable int user_id, @RequestBody User updatedUser) {
         Optional<User> existingUser = userRepository.findById(user_id);
@@ -43,14 +49,27 @@ public class  UserAdminController {
             user.setPermissions(updatedUser.getPermissions());
             user.setProject(updatedUser.getProject());
             user.setStatus(updatedUser.getStatus());
-            return userRepository.save(user); // Updates record in PostgreSQL
+            user.setFirstName(updatedUser.getFirstName());
+            user.setLastName(updatedUser.getLastName());
+            user.setPhone(updatedUser.getPhone());
+            user.setEmail(updatedUser.getEmail());
+            return userRepository.save(user);
         }
-        return null; // Handle error if user is not found
+        return null;
     }
+
+    @GetMapping("/getCurrentUser")
+    @ResponseBody
+    public User getCurrentUser(HttpSession session) {
+        String username = (String) session.getAttribute("username");
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
 
     @GetMapping("/userAdmin")
     public String userAdminPage(Model model) {
         model.addAttribute("users", userRepository.findAll());
         return "userAdmin"; // sure "userAdmin.html" exists
     }
+
 }

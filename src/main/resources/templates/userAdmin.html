@@ -669,9 +669,16 @@
         <h3 id="modalTitle"></h3>
         <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px;">
         <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px;">
+        <input type="text" id="firstName" placeholder="First Name" style="width: 100%; padding: 12px;">
+        <input type="text" id="lastName" placeholder="Last Name" style="width: 100%; padding: 12px;">
+        <input type="text" id="phone" placeholder="Phone Number" style="width: 100%; padding: 12px;">
+        <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 12px;">
+
+
 
         <!-- Role dropdown -->
         <select id="role" style="width: 100%; padding: 10px;">
+            <option value="" disabled selected>Role</option>
             <option value="ADMIN">ADMIN</option>
             <option value="STAFF">STAFF</option>
             <option value="MAIN CONTRACTOR">MAIN CONTRACTOR</option>
@@ -679,6 +686,7 @@
 
         <!-- Role Permissions dropdown -->
         <select id="permissions" style="width: 100%; padding: 10px;">
+            <option value="" disabled selected>Permissions</option>
             <option value="MANAGE EVERYTHING">MANAGE EVERYTHING</option>
             <option value="MANAGE CERTAIN PROJECT">MANAGE CERTAIN PROJECT</option>
             <option value="VIEWING MODE OF THEIR PROJECT">VIEWING MODE OF THEIR PROJECT</option>
@@ -686,15 +694,12 @@
 
         <!-- Project dropdown -->
         <select id="project" style="width: 100%; padding: 10px;">
-            <option value="PROJECT #1">ALL PROJECTS</option>
-            <option value="PROJECT #1">PROJECT #1</option>
-            <option value="PROJECT #2">PROJECT #2</option>
-            <option value="PROJECT #3">PROJECT #3</option>
-            <option value="PROJECT #4">PROJECT #4</option>
+            <option value="">Project</option>
         </select>
 
         <!-- Account Status dropdown -->
         <select id="status" style="width: 100%; padding: 10px;">
+            <option value="" disabled selected>Status</option>
             <option value="ACTIVE">ACTIVE</option>
             <option value="INACTIVE">INACTIVE</option>
         </select>
@@ -744,6 +749,23 @@
                 .catch(error => console.error('Error fetching users:', error));
         }
 
+        function loadProjectsIntoDropdown() {
+            fetch('/projectsAdmin/getProjects')
+                .then(response => response.json())
+                .then(projects => {
+                    const projectDropdown = document.getElementById('project');
+                    projectDropdown.innerHTML = '<option value="" disabled selected>Project</option>';
+                    projects.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.projectname;
+                        option.textContent = project.projectname;
+                        projectDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading projects:', error));
+        }
+
+
         // Handle table row click
         function addRowToTable(userData) {
             const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
@@ -752,7 +774,8 @@
 
             newRow.innerHTML = `
         <td>${userData.username}</td>
-        <td>${userData.password}</td>
+        <td>********</td>
+        <!-- <td>${'*'.repeat(userData.password.length)}</td> -->
         <td>${userData.role}</td>
         <td>${userData.permissions}</td>
         <td>${userData.project}</td>
@@ -769,7 +792,6 @@
 
 
         function showAddUserModal() {
-            console.log("Add User Modal Clicked");
             selectedRow = null;
             document.getElementById('modalTitle').innerText = 'ADD NEW USER';
             document.getElementById('username').value = '';
@@ -778,7 +800,7 @@
             document.getElementById('permissions').value = '';
             document.getElementById('project').value = '';
             document.getElementById('status').value = '';
-
+            loadProjectsIntoDropdown(); // Load available projects
             document.getElementById('archiveBtn').style.display = 'none';
             showModal();
         }
@@ -790,9 +812,12 @@
                 document.getElementById('password').value = selectedRow.cells[1].innerText;
                 document.getElementById('role').value = selectedRow.cells[2].innerText;
                 document.getElementById('permissions').value = selectedRow.cells[3].innerText;
-                document.getElementById('project').value = selectedRow.cells[4].innerText;
                 document.getElementById('status').value = selectedRow.cells[5].innerText;
-                document.getElementById('archiveBtn').style.display = 'inline-block'; // Show archive button
+                loadProjectsIntoDropdown(); // Load available projects
+                setTimeout(() => {
+                    document.getElementById('project').value = selectedRow.cells[4].innerText;
+                }, 200);
+                document.getElementById('archiveBtn').style.display = 'inline-block';
                 showModal();
             }
         }
@@ -823,7 +848,11 @@
                 role: document.getElementById('role').value,
                 permissions: document.getElementById('permissions').value,
                 project: document.getElementById('project').value,
-                status: document.getElementById('status').value
+                status: document.getElementById('status').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
             };
 
             if (userId) {
