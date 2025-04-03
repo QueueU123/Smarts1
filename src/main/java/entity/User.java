@@ -33,4 +33,16 @@ public class User {
 
     @Column(name = "status", length = 50)
     private String status;
+
+    @Column(name = "first_name", length = 50)
+    private String firstName;
+
+    @Column(name = "last_name", length = 50)
+    private String lastName;
+
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "email", length = 100)
+    private String email;
 }
