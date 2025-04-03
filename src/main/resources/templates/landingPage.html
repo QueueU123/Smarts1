@@ -413,9 +413,10 @@
     <div id="myModal" class="modal">
         <div class="modal-content">
             <h3>FORGET PASSWORD</h3>
-            <form>
+            <form id="forgotPasswordForm">
                 <input type="email" id="email" name="email" required
-                    placeholder="Please enter your email to reset the password">
+                       placeholder="Please enter your email to reset the password">
+                <p id="forgotMessage" style="color: green;"></p>
                 <button type="button" onclick="closeModal()">CANCEL</button>
                 <button type="submit">SUBMIT</button>
             </form>
@@ -423,30 +424,42 @@
     </div>
 
     <script>
-        var animation = lottie.loadAnimation({
-            container: document.getElementById('lottie-animation'),
-            renderer: 'svg',
-            loop: true,
-            autoplay: true,
-            path: 'https://lottie.host/ff744c0c-42a0-4f9e-8e41-cef5502ed03f/7qOmL4IDKq.json'
-        });
-
-        // Modal functionality
         function openModal() {
-            document.getElementById('myModal').style.display = "block";
+            document.getElementById("myModal").style.display = "block";
         }
 
         function closeModal() {
-            document.getElementById('myModal').style.display = "none";
+            document.getElementById("myModal").style.display = "none";
         }
 
-        // Close modal if clicked outside
-        window.onclick = function (event) {
-            var modal = document.getElementById('myModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+        document.getElementById("forgotPasswordForm").addEventListener("submit", function (e) {
+            e.preventDefault(); // stop form from reloading the page
+
+            const email = document.getElementById("email").value;
+
+            fetch("/api/sendForgotEmail", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `email=${encodeURIComponent(email)}`
+            })
+                .then(response => response.text().then(text => {
+                    if (response.ok) {
+                        document.getElementById("forgotMessage").textContent = "Successfully sent!";
+                        document.getElementById("forgotMessage").style.color = "green";
+                    } else {
+                        // ✅ Show actual backend message (e.g. "User not found" or "Failed to send email")
+                        document.getElementById("forgotMessage").textContent = text || "Failed to send email.";
+                        document.getElementById("forgotMessage").style.color = "red";
+                    }
+                }))
+                .catch(() => {
+                    document.getElementById("forgotMessage").textContent = "An error occurred.";
+                    document.getElementById("forgotMessage").style.color = "red";
+                });
+        });
     </script>
+
 </body>
 </html>
