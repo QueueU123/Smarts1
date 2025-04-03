@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Staff Inventory</title>
+    <title>Staff My Projects</title>
     <link rel='stylesheet' href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
     <link
         href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;700&family=Baloo+Chettan+2:wght@400;700&family=Numans&display=swap"
@@ -400,6 +400,15 @@
             margin: 0;
         }
 
+        .functionality {
+            margin-top: 10px;
+            margin-right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        select,
         button {
             font-family: 'Numans', sans-serif;
             padding: 10px 15px;
@@ -410,15 +419,20 @@
             cursor: pointer;
         }
 
-        .inventory-container {
-            display: flex;
-            flex-direction: row;
-            margin: auto;
-            max-width: 1500px;
-            gap: 40px;
+        select {
+            background-color: #f9f9f9;
+            color: #124D54;
+        }
+
+
+        .materials-container {
             width: 90%;
-            justify-content: center;
-            margin-top: 30px;
+            max-width: 1500px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            padding: 20px;
         }
 
         .category-container {
@@ -441,53 +455,67 @@
             max-width: 300px;
         }
 
-        .category-list label {
+        #toggleArchiveBtn {
             display: flex;
             align-items: center;
-            background-color: #FF6F61;
+            background-color: darkgray;
             color: #fff;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s, transform 0.2s;
-            cursor: pointer;
-            width: 100%;
-            height: 50px;
-        }
-
-        .category-list input[type="checkbox"] {
-            margin-right: 10px;
-            accent-color: #FF6F61;
-            width: 18px;
-            height: 18px;
-        }
-
-        .category-checkbox:checked+label {
-            background-color: #FF6F61;
-            color: #fff;
-            transform: scale(1.05);
-        }
-
-        .inventory-table-container {
-            width: 80%;
-            background-color: #fff;
+            padding: auto;
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-            padding: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            width: 12%;
+            height: 40px;
+            margin-top: 10px;
+        }
+
+        #toggleArchiveBtn:hover {
+            background-color: dimgray;
+        }
+
+        .materials-table {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #fff;
+        }
+
+        .project-details {
+            display: flex;
+            justify-content: space-between;
+            gap: 50px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+            text-align: justify;
+            text-transform: uppercase;
+        }
+
+        .b {
+            text-align: right;
+        }
+
+        .project-details div {
+            width: 48%;
+        }
+
+        .project-details h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 20px;
+            color: #124D54;
             margin: 0;
         }
 
-        .inventory-table {
-            max-height: 600px;
-            overflow-y: auto;
-            border: 1px solid #fff;
+        .project-details p {
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            margin: 5px 0;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
+            margin: 20px auto;
         }
 
         th,
@@ -496,6 +524,7 @@
             text-align: center;
             border: 1px solid #fff;
             text-transform: uppercase;
+            text-overflow: ellipsis;
         }
 
         th {
@@ -537,6 +566,16 @@
             background: linear-gradient(180deg, #16a085 0%, rgb(22, 60, 77) 100%);
         }
 
+        #dropdown select {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            width: 400px;
+        }
+
         .overlay {
             display: none;
             position: fixed;
@@ -567,8 +606,6 @@
             margin: 20px auto;
             padding: 20px 30px;
             border: 4px solid #102937;
-            width: 80%;
-            max-width: 500px;
             border-radius: 30px;
             text-align: center;
             color: #F9744B;
@@ -592,7 +629,7 @@
 
         .modal-content input,
         #project-name,
-        #category {
+        #projectSelect {
             width: 100%;
             padding: 10px;
             margin: 5px 0 20px 0;
@@ -603,10 +640,18 @@
             text-transform: uppercase;
         }
 
+        #projectSelect {
+            width: 60%;
+        }
+
         .form-row {
             display: flex;
             gap: 10px;
             width: 100%;
+        }
+
+        #projectSelect {
+            width: 60%;
         }
 
         .modal-content button {
@@ -618,6 +663,131 @@
             border: none;
             margin: 0 10px;
             text-transform: uppercase;
+        }
+
+        .stage {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(180deg, #ee9b7b, #F9744B);
+
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stage h4 {
+            margin-bottom: 10px;
+            font-family: 'Fredoka';
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .stage-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            width: 100%;
+        }
+
+        .task-item input[type="checkbox"] {
+            flex: 0 0 10%;
+            transform: scale(1.5);
+            accent-color: #124d54;
+            margin-right: 5px;
+        }
+
+        .task-name {
+            flex: 1;
+            padding: 5px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #FFE0DC;
+        }
+
+        .progress-bar {
+            margin-top: 20px;
+        }
+
+        .progress-bar p {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        progress {
+            width: 80%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+
+        progress::-webkit-progress-value {
+            background-color: #12B1D1;
+            border-radius: 10px;
+        }
+
+        progress::-moz-progress-bar {
+            background-color: #12B1D1;
+            border-radius: 10px;
+        }
+
+        .add-task-btn {
+            padding: 0;
+            font-size: 12px;
+            background-color: #124d54;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .task-name[readonly] {
+            background-color: #fff;
+            cursor: not-allowed;
+            border: none;
+        }
+
+        .task-item button {
+            flex: 0 0 10%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin: 0;
+            padding: 0;
+        }
+
+        .task-item button i {
+            font-size: 18px;
+            color: #fff;
+        }
+
+        .task-item button i:hover {
+            color: #124d54;
+        }
+
+        #editProgressModal .modal-content {
+            max-height: 80%;
+            overflow-y: auto;
+            max-width: 60%;
+        }
+
+        #editProgressModal .button-container {
+            width: 60%;
+            justify-self: center;
         }
 
         .button-container {
@@ -636,6 +806,49 @@
         .button-container button:hover {
             background: #124D54;
         }
+
+        .actions .edit-icon,
+        .actions .delete-icon {
+            cursor: pointer;
+        }
+
+
+        .actions .delete-icon {
+            margin-left: 10px;
+        }
+
+        #addRowBtn {
+            font-family: 'Numans', sans-serif;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #124D54;
+            color: white;
+            cursor: pointer;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .archived {
+            text-decoration: line-through;
+        }
+
+        #addRowBtn:hover {
+            background-color: #FF6347;
+        }
+
+        #materialsTable th:last-child,
+        #materialsTable td:last-child {
+            display: none;
+            width: 100%;
+            height: auto;
+        }
+
+        .actions {
+            border-top: none;
+            border-left: none;
+            height: auto;
+        }
     </style>
 </head>
 
@@ -646,12 +859,11 @@
             <img src="https://i.postimg.cc/j599G4B8/smarts-logo-removebg-preview.png" alt="SMARTS Logo">
         </div>
         <div>
-            <p>ROLE: <span>EXECUTIVE STAFF</span></p>
+            <p>ROLE: <span>ADMIN</span></p>
             <i class='bx bxs-user-circle'></i>
         </div>
     </header>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="logo-details">
             <div class="logo_name">ACCE Construction</div>
@@ -659,49 +871,56 @@
         </div>
         <ul class="nav-list">
             <li>
-                <a href="homepageExestaff">
+                <a href="homepageAdmin">
                     <i class='bx bx-home'></i>
                     <span class="links_name">Homepage</span>
                 </a>
                 <span class="tooltip">Homepage</span>
             </li>
             <li>
-                <a href="myProjectExestaff">
+                <a href="projectsAdmin">
                     <i class='bx bx-task'></i>
-                    <span class="links_name">My Project</span>
+                    <span class="links_name">Projects</span>
                 </a>
-                <span class="tooltip">My Project</span>
+                <span class="tooltip">Projects</span>
             </li>
             <li>
-                <a href="inventoryExestaff">
+                <a href="inventoryAdmin">
                     <i class='bx bx-store-alt'></i>
                     <span class="links_name">Inventory</span>
                 </a>
                 <span class="tooltip">Inventory</span>
             </li>
             <li>
-                <a href="invoiceExestaff">
+                <a href="invoiceAdmin">
                     <i class='bx bx-receipt'></i>
                     <span class="links_name">Invoice</span>
                 </a>
                 <span class="tooltip">Invoice</span>
             </li>
             <li>
-                <a href="reportsExestaff">
+                <a href="reportsAdmin">
                     <i class='bx bx-bar-chart'></i>
                     <span class="links_name">Reports & Analytics</span>
                 </a>
                 <span class="tooltip">Reports & Analytics</span>
             </li>
             <li>
-                <a href="requestsStatusExestaff">
-                    <i class='bx bx-comment-dots'></i>
-                    <span class="links_name">Requests Status</span>
+                <a href="userAdmin">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">User</span>
                 </a>
-                <span class="tooltip">Requests Status</span>
+                <span class="tooltip">User</span>
             </li>
             <li>
-                <a href="settingsExestaff">
+                <a href="requestsAdmin">
+                    <i class='bx bx-comment-dots'></i>
+                    <span class="links_name">Requests</span>
+                </a>
+                <span class="tooltip">Requests</span>
+            </li>
+            <li>
+                <a href="settingsAdmin">
                     <i class='bx bx-cog'></i>
                     <span class="links_name">Settings</span>
                 </a>
@@ -716,250 +935,177 @@
             </li>
         </ul>
     </div>
-
     <!-- Main Section -->
     <section class="home-section">
         <div class="upper">
-            <h1>INVENTORY</h1>
-        </div>
-
-        <div class="inventory-container">
-            <div class="category-container">
-                <h2>CATEGORY</h2>
-                <div class="category-list">
-                    <label><input type="checkbox" class="category-checkbox" value="building"> Building</label>
-                    <label><input type="checkbox" class="category-checkbox" value="steel-and-metals"> Steel and
-                        Metals</label>
-                    <label><input type="checkbox" class="category-checkbox" value="wood-and-timber"> Wood and
-                        Timber</label>
-                    <label><input type="checkbox" class="category-checkbox" value="plumbing"> Plumbing</label>
-                    <label><input type="checkbox" class="category-checkbox" value="electrical"> Electrical</label>
-                    <label><input type="checkbox" class="category-checkbox" value="roofing"> Roofing</label>
-                    <label><input type="checkbox" class="category-checkbox" value="insulation"> Insulation</label>
-                    <label><input type="checkbox" class="category-checkbox" value="finishing"> Finishing</label>
-                </div>
-            </div>
-            <div class="inventory-table-container">
-                <div class="inventory-table">
-                    <table id="inventoryTable">
-                        <thead>
-                            <tr>
-                                <th>Category</th>
-                                <th>Material</th>
-                                <th>Stock Available</th>
-                                <th>Cost Per Unit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr data-category="building">
-                                <td>Building</td>
-                                <td>Concrete Blocks</td>
-                                <td>500 pcs</td>
-                                <td>PHP 50</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Beams</td>
-                                <td>50 pcs</td>
-                                <td>PHP 500</td>
-                            </tr>
-                            <tr data-category="wood-and-timber">
-                                <td>Wood and Timber</td>
-                                <td>Plywood Sheets</td>
-                                <td>200 pcs</td>
-                                <td>PHP 300</td>
-                            </tr>
-                            <tr data-category="plumbing">
-                                <td>Plumbing</td>
-                                <td>PVC Pipes</td>
-                                <td>100 meters</td>
-                                <td>PHP 100</td>
-                            </tr>
-                            <tr data-category="electrical">
-                                <td>Electrical</td>
-                                <td>Copper Wires</td>
-                                <td>150 rolls</td>
-                                <td>PHP 400</td>
-                            </tr>
-                            <tr data-category="roofing">
-                                <td>Roofing</td>
-                                <td>Corrugated Sheets</td>
-                                <td>80 pcs</td>
-                                <td>PHP 600</td>
-                            </tr>
-                            <tr data-category="insulation">
-                                <td>Insulation</td>
-                                <td>Fiberglass Rolls</td>
-                                <td>50 rolls</td>
-                                <td>PHP 700</td>
-                            </tr>
-                            <tr data-category="finishing">
-                                <td>Finishing</td>
-                                <td>Paint Buckets</td>
-                                <td>100 cans</td>
-                                <td>PHP 1,200</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Beams</td>
-                                <td>50 pcs</td>
-                                <td>PHP 500</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Rebars (10mm)</td>
-                                <td>200 meters</td>
-                                <td>PHP 75</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Plates</td>
-                                <td>300 pcs</td>
-                                <td>PHP 250</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Tubes</td>
-                                <td>100 pcs</td>
-                                <td>PHP 300</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Wire Mesh</td>
-                                <td>50 rolls</td>
-                                <td>PHP 1,000</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="buttons">
-                    <button id="requestBtn">Request</button>
-                </div>
-                <div class="overlay" id="overlay"></div>
-
-                <!-- Modal Structure -->
-                <div id="requestModal" class="modal">
-                    <div class="modal-content">
-                        <h3>Request Material</h3>
-                        <form id="requestForm">
-                            <label for="project-name">Project Name</label>
-                            <select id="project-name" name="project-name" required>
-                                <option value="">Select Project</option>
-                                <option value="project1">Residential Building Construction</option>
-                                <option value="project2">Commercial Office Building</option>
-                                <option value="project3">Mixed-Use Development</option>
-                                <option value="project4">Hotel and Resort Complex</option>
-                                <option value="project5">Shopping Mall and Retail Center</option>
-                            </select>
-
-                            <label for="category">Category</label>
-                            <select id="category" name="category" required>
-                                <option value="">Select Category</option>
-                                <option value="building">Building</option>
-                                <option value="steel-and-metals">Steel and Metals</option>
-                                <option value="wood-and-timber">Wood and Timber</option>
-                                <option value="plumbing">Plumbing</option>
-                                <option value="electrical">Electrical</option>
-                                <option value="roofing">Roofing</option>
-                                <option value="insulation">Insulation</option>
-                                <option value="finishing">Finishing</option>
-                            </select>
-
-                            <label for="material">Material</label>
-                            <input type="text" id="material" name="material" placeholder="Enter material name" required>
-
-                            <label for="quantity">Quantity</label>
-                            <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" required>
-
-                            <div class="button-container">
-                                <button type="button" class="cancelModalBtn"
-                                    onclick="cancelModal('requestModal')">Cancel</button>
-                                <button type="submit">Submit Request</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <h1>PROJECT MANAGEMENT</h1>
+            <div id="dropdown" class="functionality">
+                <select id="projectDropdown">
+                    <option disabled selected hidden>Select a project</option>
+                </select>
             </div>
         </div>
 
+        <div class="materials-container">
+            <div class="project-details">
+                <div>
+                    <h2><strong>Project:</strong> <span id="projectName"></span></h2>
+                    <p><strong>Location:</strong> <span id="projectLocation"></span></p>
+                </div>
+                <div class="b">
+                    <h2><strong>Company:</strong> <span id="companyName"></span></h2>
+                    <p><strong>Contact:</strong> <span id="companyContact"></span></p>
+                </div>
+            </div>
 
-    </section>
+            <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT MATERIALS OVERVIEW</h2>
 
-    <!-- Footer -->
-    <footer>
-        <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
-    </footer>
+            <div class="materials-table">
+                <table id="materialsTable">
+                    <thead>
+                    <tr>
+                        <th>Item No.</th>
+                        <th>Materials</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                        <th class="actions">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <button id="addRowBtn" style="display:none;">Add Row</button>
+            <button id="toggleArchiveBtn">Show Archived Rows</button>
+        </div>
 
-    <script>
-        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        const inventoryTable = document.querySelector('#inventoryTable');
+        <div class="buttons">
+            <button id="backBtn" class="hidden">Back</button>
+            <button id="addBtn" class="hidden">Add</button>
+            <button id="editBtn">Edit</button>
+            <button id="editProgressBtn">Edit Project Progress</button>
+        </div>
 
-        categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const selectedCategories = Array.from(categoryCheckboxes)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => checkbox.value);
+        <!-- Footer -->
+        <footer>
+            <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
+        </footer>
 
-                const rows = inventoryTable.querySelectorAll('tbody tr');
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const dropdown = document.getElementById('projectDropdown');
+                const nameField = document.getElementById('projectName');
+                const locationField = document.getElementById('projectLocation');
+                const companyField = document.getElementById('companyName');
+                const contactField = document.getElementById('companyContact');
+                const tableBody = document.querySelector('#materialsTable tbody');
+                const editBtn = document.getElementById('editBtn');
+                const addBtn = document.getElementById('addBtn');
+                const backBtn = document.getElementById('backBtn');
+                const addRowBtn = document.getElementById('addRowBtn');
+                const toggleArchiveBtn = document.getElementById('toggleArchiveBtn');
 
-                rows.forEach(row => {
-                    const rowCategory = row.getAttribute('data-category');
+                let inEditMode = false;
+                let showArchived = false;
 
-                    if (selectedCategories.length === 0 || selectedCategories.includes(rowCategory)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
+                function toggleEditMode() {
+                    inEditMode = !inEditMode;
+                    editBtn.textContent = inEditMode ? 'Save' : 'Edit';
+                    addBtn.classList.toggle('hidden', !inEditMode);
+                    backBtn.classList.toggle('hidden', !inEditMode);
+                    addRowBtn.style.display = inEditMode ? 'inline-block' : 'none';
+
+                    document.querySelectorAll('.actions').forEach(cell => {
+                        cell.innerHTML = inEditMode ? '<span class="edit-icon">✏️</span><span class="delete-icon">❌</span>' : '';
+                    });
+                }
+
+                function createRow(data = ['', '', '', '', ''], archived = false) {
+                    const row = document.createElement('tr');
+                    if (archived) row.classList.add('archived');
+
+                    data.forEach(text => {
+                        const cell = document.createElement('td');
+                        cell.textContent = text;
+                        row.appendChild(cell);
+                    });
+
+                    const actions = document.createElement('td');
+                    actions.className = 'actions';
+                    if (inEditMode) {
+                        actions.innerHTML = '<span class="edit-icon">✏️</span><span class="delete-icon">❌</span>';
+                    }
+                    row.appendChild(actions);
+                    tableBody.appendChild(row);
+                }
+
+                editBtn.addEventListener('click', toggleEditMode);
+                backBtn.addEventListener('click', toggleEditMode);
+                addBtn.addEventListener('click', () => createRow());
+                addRowBtn.addEventListener('click', () => createRow());
+
+                toggleArchiveBtn.addEventListener('click', () => {
+                    showArchived = !showArchived;
+                    toggleArchiveBtn.textContent = showArchived ? 'Hide Archived Rows' : 'Show Archived Rows';
+                    document.querySelectorAll('.archived').forEach(row => {
+                        row.style.display = showArchived ? '' : 'none';
+                    });
+                });
+
+                tableBody.addEventListener('click', (e) => {
+                    const row = e.target.closest('tr');
+                    if (e.target.classList.contains('edit-icon')) {
+                        for (let i = 1; i <= 4; i++) {
+                            const cell = row.children[i];
+                            const input = document.createElement('input');
+                            input.type = 'text';
+                            input.value = cell.textContent;
+                            cell.innerHTML = '';
+                            cell.appendChild(input);
+                        }
+                        e.target.textContent = '💾';
+                        e.target.classList.remove('edit-icon');
+                        e.target.classList.add('save-icon');
+                    } else if (e.target.classList.contains('save-icon')) {
+                        for (let i = 1; i <= 4; i++) {
+                            const cell = row.children[i];
+                            const input = cell.querySelector('input');
+                            cell.textContent = input.value;
+                        }
+                        e.target.textContent = '✏️';
+                        e.target.classList.remove('save-icon');
+                        e.target.classList.add('edit-icon');
+                    } else if (e.target.classList.contains('delete-icon')) {
+                        row.classList.add('archived');
+                        if (!showArchived) row.style.display = 'none';
                     }
                 });
+
+                fetch('/projectsAdmin/getProjects')
+                    .then(res => res.json())
+                    .then(projects => {
+                        dropdown.innerHTML = '<option disabled selected hidden>Select a project</option>';
+                        projects.forEach(project => {
+                            const option = document.createElement('option');
+                            option.value = project.projectId;
+                            option.textContent = project.projectname;
+                            option.dataset.companyname = project.companyname || 'N/A';
+                            option.dataset.companylocation = project.companyLocation || 'N/A';
+                            option.dataset.companycontact = project.companycontact || 'N/A';
+                            dropdown.appendChild(option);
+                        });
+                    });
+
+                dropdown.addEventListener('change', () => {
+                    const selected = dropdown.selectedOptions[0];
+                    nameField.textContent = selected.textContent || 'N/A';
+                    companyField.textContent = selected.dataset.companyname || 'N/A';
+                    locationField.textContent = selected.dataset.companylocation || 'N/A';
+                    contactField.textContent = selected.dataset.companycontact || 'N/A';
+                });
             });
-        });
-
-        // Open Modal with Overlay
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const overlay = document.getElementById('overlay');
-            modal.style.display = "block";
-            overlay.style.display = "block";
-        }
-
-        // Close Modal and Overlay
-        function cancelModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const overlay = document.getElementById('overlay');
-            modal.style.display = "none";
-            overlay.style.display = "none";
-        }
-
-        // Close Modal if clicked outside
-        window.addEventListener('click', function (event) {
-            const modals = document.querySelectorAll('.modal');
-            const overlay = document.getElementById('overlay');
-            modals.forEach(modal => {
-                if (event.target === modal || event.target === overlay) {
-                    modal.style.display = "none";
-                    overlay.style.display = "none";
-                }
-            });
-        });
-
-        // Button to Open Modal (Request Button)
-        const requestBtn = document.getElementById('requestBtn');
-        requestBtn.addEventListener('click', function () {
-            openModal('requestModal');
-        });
-
-        let sidebar = document.querySelector(".sidebar");
-        let cancelModalBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
-
-        cancelModalBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
-
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
-    </script>
+        </script>
+    </section>
 </body>
 
 </html>
