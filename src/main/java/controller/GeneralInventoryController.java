@@ -60,6 +60,7 @@ public class GeneralInventoryController {
         try {
             // Log incoming data
             System.out.println("Received new inventory item:");
+            System.out.println("ID: " + inventory.getMaterialId());
             System.out.println("Category: " + inventory.getMaterialCategory());
             System.out.println("Name: " + inventory.getMaterialName());
             System.out.println("Stock: " + inventory.getMaterialStock());
