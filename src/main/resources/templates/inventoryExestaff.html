@@ -673,12 +673,13 @@
                 <span class="tooltip">My Project</span>
             </li>
             <li>
-                <a href="inventoryExestaff">
+                <a href="/exestaff/inventory">
                     <i class='bx bx-store-alt'></i>
                     <span class="links_name">Inventory</span>
                 </a>
                 <span class="tooltip">Inventory</span>
             </li>
+
             <li>
                 <a href="invoiceExestaff">
                     <i class='bx bx-receipt'></i>
@@ -726,18 +727,10 @@
         <div class="inventory-container">
             <div class="category-container">
                 <h2>CATEGORY</h2>
-                <div class="category-list">
-                    <label><input type="checkbox" class="category-checkbox" value="building"> Building</label>
-                    <label><input type="checkbox" class="category-checkbox" value="steel-and-metals"> Steel and
-                        Metals</label>
-                    <label><input type="checkbox" class="category-checkbox" value="wood-and-timber"> Wood and
-                        Timber</label>
-                    <label><input type="checkbox" class="category-checkbox" value="plumbing"> Plumbing</label>
-                    <label><input type="checkbox" class="category-checkbox" value="electrical"> Electrical</label>
-                    <label><input type="checkbox" class="category-checkbox" value="roofing"> Roofing</label>
-                    <label><input type="checkbox" class="category-checkbox" value="insulation"> Insulation</label>
-                    <label><input type="checkbox" class="category-checkbox" value="finishing"> Finishing</label>
+                <div class="category-list" id="categoryList">
+                    <!-- checkboxes will be injected here -->
                 </div>
+
             </div>
             <div class="inventory-table-container">
                 <div class="inventory-table">
@@ -750,86 +743,10 @@
                                 <th>Cost Per Unit</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr data-category="building">
-                                <td>Building</td>
-                                <td>Concrete Blocks</td>
-                                <td>500 pcs</td>
-                                <td>PHP 50</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Beams</td>
-                                <td>50 pcs</td>
-                                <td>PHP 500</td>
-                            </tr>
-                            <tr data-category="wood-and-timber">
-                                <td>Wood and Timber</td>
-                                <td>Plywood Sheets</td>
-                                <td>200 pcs</td>
-                                <td>PHP 300</td>
-                            </tr>
-                            <tr data-category="plumbing">
-                                <td>Plumbing</td>
-                                <td>PVC Pipes</td>
-                                <td>100 meters</td>
-                                <td>PHP 100</td>
-                            </tr>
-                            <tr data-category="electrical">
-                                <td>Electrical</td>
-                                <td>Copper Wires</td>
-                                <td>150 rolls</td>
-                                <td>PHP 400</td>
-                            </tr>
-                            <tr data-category="roofing">
-                                <td>Roofing</td>
-                                <td>Corrugated Sheets</td>
-                                <td>80 pcs</td>
-                                <td>PHP 600</td>
-                            </tr>
-                            <tr data-category="insulation">
-                                <td>Insulation</td>
-                                <td>Fiberglass Rolls</td>
-                                <td>50 rolls</td>
-                                <td>PHP 700</td>
-                            </tr>
-                            <tr data-category="finishing">
-                                <td>Finishing</td>
-                                <td>Paint Buckets</td>
-                                <td>100 cans</td>
-                                <td>PHP 1,200</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Beams</td>
-                                <td>50 pcs</td>
-                                <td>PHP 500</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Rebars (10mm)</td>
-                                <td>200 meters</td>
-                                <td>PHP 75</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Plates</td>
-                                <td>300 pcs</td>
-                                <td>PHP 250</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Tubes</td>
-                                <td>100 pcs</td>
-                                <td>PHP 300</td>
-                            </tr>
-                            <tr data-category="steel-and-metals">
-                                <td>Steel and Metals</td>
-                                <td>Steel Wire Mesh</td>
-                                <td>50 rolls</td>
-                                <td>PHP 1,000</td>
-                            </tr>
+                        <tbody id="inventoryTableBody">
+                        <!-- Inventory rows will be injected here -->
                         </tbody>
+
                     </table>
                 </div>
                 <div class="buttons">
@@ -891,38 +808,6 @@
     </footer>
 
     <script>
-        const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
-        const inventoryTable = document.querySelector('#inventoryTable');
-
-        categoryCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const selectedCategories = Array.from(categoryCheckboxes)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => checkbox.value);
-
-                const rows = inventoryTable.querySelectorAll('tbody tr');
-
-                rows.forEach(row => {
-                    const rowCategory = row.getAttribute('data-category');
-
-                    if (selectedCategories.length === 0 || selectedCategories.includes(rowCategory)) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        // Open Modal with Overlay
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const overlay = document.getElementById('overlay');
-            modal.style.display = "block";
-            overlay.style.display = "block";
-        }
-
-        // Close Modal and Overlay
         function cancelModal(modalId) {
             const modal = document.getElementById(modalId);
             const overlay = document.getElementById('overlay');
@@ -930,36 +815,86 @@
             overlay.style.display = "none";
         }
 
-        // Close Modal if clicked outside
-        window.addEventListener('click', function (event) {
-            const modals = document.querySelectorAll('.modal');
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
             const overlay = document.getElementById('overlay');
-            modals.forEach(modal => {
-                if (event.target === modal || event.target === overlay) {
-                    modal.style.display = "none";
-                    overlay.style.display = "none";
+            modal.style.display = "block";
+            overlay.style.display = "block";
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const categoryList = document.getElementById("categoryList");
+            const inventoryTable = document.querySelector('#inventoryTable');
+            const inventoryTableBody = document.getElementById("inventoryTableBody");
+
+            function fetchAndRenderInventory() {
+                fetch("/exestaff/inventory/getInventory")
+                    .then(res => res.json())
+                    .then(data => {
+                        const categories = new Set();
+                        inventoryTableBody.innerHTML = "";
+
+                        data.forEach(item => {
+                            categories.add(item.material_category);
+                            const row = document.createElement("tr");
+                            row.setAttribute("data-category", item.material_category.toLowerCase().replace(/\s+/g, "-"));
+                            row.innerHTML = `
+                            <td>${item.material_category}</td>
+                            <td>${item.material_name}</td>
+                            <td>${item.material_stock}</td>
+                            <td>${item.material_price}</td>
+                        `;
+                            inventoryTableBody.appendChild(row);
+                        });
+
+                        renderCategoryCheckboxes([...categories]);
+                    });
+            }
+
+            function renderCategoryCheckboxes(categories) {
+                categoryList.innerHTML = "";
+                categories.sort().forEach(category => {
+                    const value = category.toLowerCase().replace(/\s+/g, "-");
+                    const label = document.createElement("label");
+                    label.innerHTML = `<input type="checkbox" class="category-checkbox" value="${value}"> ${category}`;
+                    categoryList.appendChild(label);
+                });
+
+                document.querySelectorAll('.category-checkbox').forEach(cb => {
+                    cb.addEventListener('change', filterRowsByCategory);
+                });
+            }
+
+            function filterRowsByCategory() {
+                const selected = [...document.querySelectorAll('.category-checkbox:checked')].map(cb => cb.value);
+                const rows = inventoryTable.querySelectorAll("tbody tr");
+
+                rows.forEach(row => {
+                    const rowCategory = row.getAttribute('data-category');
+                    row.style.display = selected.length === 0 || selected.includes(rowCategory) ? "" : "none";
+                });
+            }
+
+            // Attach modal open
+            document.getElementById("requestBtn").addEventListener("click", () => {
+                openModal("requestModal");
+            });
+
+            // Overlay click to close modal
+            window.addEventListener("click", function (event) {
+                const modal = document.getElementById("requestModal");
+                const overlay = document.getElementById("overlay");
+                if (event.target === overlay) {
+                    cancelModal("requestModal");
                 }
             });
-        });
 
-        // Button to Open Modal (Request Button)
-        const requestBtn = document.getElementById('requestBtn');
-        requestBtn.addEventListener('click', function () {
-            openModal('requestModal');
-        });
-
-        let sidebar = document.querySelector(".sidebar");
-        let cancelModalBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
-
-        cancelModalBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
-        });
-
-        searchBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("open");
+            fetchAndRenderInventory();
         });
     </script>
+
+
+
 </body>
 
 </html>
