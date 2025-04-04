@@ -1040,7 +1040,9 @@
                 }
 
                 editBtn.addEventListener('click', toggleEditMode);
-                backBtn.addEventListener('click', toggleEditMode);
+                backBtn.addEventListener('click', () => {
+                    window.location.href = 'projectsAdmin';
+                });
                 addBtn.addEventListener('click', () => createRow());
                 addRowBtn.addEventListener('click', () => createRow());
 

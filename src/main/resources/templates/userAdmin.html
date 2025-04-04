@@ -693,9 +693,17 @@
         </select>
 
         <!-- Project dropdown -->
-        <select id="project" style="width: 100%; padding: 10px;">
-            <option value="">Project</option>
-        </select>
+        <!-- Project Selection Container -->
+        <div id="projectSelectionContainer">
+            <select id="project" style="width: 100%; padding: 10px;">
+                <option value="" disabled selected>Project</option>
+                <!-- Dynamically populated -->
+            </select>
+        </div>
+
+        <!-- Placeholder for dynamically inserted checkboxes -->
+        <div id="projectCheckboxes" style="display: none; padding: 10px 0;"></div>
+
 
         <!-- Account Status dropdown -->
         <select id="status" style="width: 100%; padding: 10px;">
@@ -721,86 +729,200 @@
     </footer>
     <script>
         let selectedRow = null;
+        let allProjects = [];
 
-        function updateRowInTable(updatedUser) {
-            if (selectedRow) {
-                selectedRow.cells[0].innerText = updatedUser.username;
-                selectedRow.cells[1].innerText = updatedUser.password;
-                selectedRow.cells[2].innerText = updatedUser.role;
-                selectedRow.cells[3].innerText = updatedUser.permissions;
-                selectedRow.cells[4].innerText = updatedUser.project;
-                selectedRow.cells[5].innerText = updatedUser.status;
-            }
-        }
+        const roleSelect = document.getElementById('role');
+        const permissionsSelect = document.getElementById('permissions');
+        const projectSelect = document.getElementById('project');
+        const projectCheckboxesDiv = document.getElementById('projectCheckboxes');
+        const projectContainer = document.getElementById('projectSelectionContainer');
 
-        //Fetch and display users when the page loads
         document.addEventListener("DOMContentLoaded", function () {
             fetchUsersFromDatabase();
+            loadProjectsIntoDropdownAndCache();
         });
 
-        //fetch all users from the database
         function fetchUsersFromDatabase() {
-            fetch('/userAdmin/getUsers') // Adjust this URL based on your backend
+            fetch('/userAdmin/getUsers')
                 .then(response => response.json())
                 .then(users => {
-                    console.log('Fetched users:', users);
-                    users.forEach(user => addRowToTable(user)); // ✅ Add each user to the table
+                    users.forEach(user => addRowToTable(user));
                 })
                 .catch(error => console.error('Error fetching users:', error));
         }
 
-        function loadProjectsIntoDropdown() {
+        function loadProjectsIntoDropdownAndCache() {
             fetch('/projectsAdmin/getProjects')
                 .then(response => response.json())
                 .then(projects => {
-                    const projectDropdown = document.getElementById('project');
-                    projectDropdown.innerHTML = '<option value="" disabled selected>Project</option>';
-                    projects.forEach(project => {
-                        const option = document.createElement('option');
-                        option.value = project.projectname;
-                        option.textContent = project.projectname;
-                        projectDropdown.appendChild(option);
-                    });
+                    allProjects = projects;
+                    refreshProjectDropdown();
+                    renderProjectCheckboxes(projects);
                 })
                 .catch(error => console.error('Error loading projects:', error));
         }
 
-
-        // Handle table row click
-        function addRowToTable(userData) {
-            const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
-            const newRow = table.insertRow();
-            newRow.setAttribute('data-user-id', userData.userId);//Store user ID in row
-
-            newRow.innerHTML = `
-        <td>${userData.username}</td>
-        <td>********</td>
-        <!-- <td>${'*'.repeat(userData.password.length)}</td> -->
-        <td>${userData.role}</td>
-        <td>${userData.permissions}</td>
-        <td>${userData.project}</td>
-        <td>${userData.status}</td>
-    `;
-
-            newRow.addEventListener('click', () => {
-                document.querySelectorAll('#userTable tbody tr').forEach(r => r.classList.remove('selected'));
-                newRow.classList.add('selected');
-                selectedRow = newRow;
-                document.getElementById('archiveBtn').style.display = 'inline-block';
+        function refreshProjectDropdown() {
+            projectSelect.innerHTML = '<option value="" disabled selected>Project</option>';
+            allProjects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.projectname;
+                option.textContent = project.projectname;
+                projectSelect.appendChild(option);
             });
         }
 
+        function renderProjectCheckboxes(projects) {
+            projectCheckboxesDiv.innerHTML = '';
+            projects.forEach(project => {
+                const label = document.createElement('label');
+                label.style.display = 'block';
+                const input = document.createElement('input');
+
+                if (roleSelect.value === 'MAIN CONTRACTOR' && permissionsSelect.value === 'VIEWING MODE OF THEIR PROJECT') {
+                    input.type = 'checkbox';
+                    input.name = 'projectRadio';
+                } else {
+                    input.type = 'checkbox';
+                    input.name = 'projectCheckbox';
+                }
+
+                input.value = project.projectname;
+                input.checked = true;
+                label.appendChild(input);
+                label.appendChild(document.createTextNode(` ${project.projectname}`));
+                projectCheckboxesDiv.appendChild(label);
+            });
+        }
+
+        roleSelect.addEventListener('change', function () {
+            if (!selectedRow) { // Only reset fields in Add User mode
+                permissionsSelect.value = '';
+                document.getElementById('status').value = '';
+                projectSelect.value = '';
+                projectCheckboxesDiv.innerHTML = '';
+            }
+            const selectedRole = roleSelect.value;
+
+            Array.from(permissionsSelect.options).forEach(opt => {
+                opt.style.display = 'none';
+            });
+
+            if (selectedRole === 'ADMIN') {
+                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
+                projectSelect.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'none';
+            } else if (selectedRole === 'STAFF') {
+                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
+                permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
+                projectSelect.style.display = 'block';
+                projectCheckboxesDiv.style.display = 'none';
+            } else if (selectedRole === 'MAIN CONTRACTOR') {
+                permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
+                projectSelect.style.display = 'block';
+                projectCheckboxesDiv.style.display = 'none';
+            } else if (selectedRole === 'STAFF') {
+                permissionsSelect.querySelector('option[value="MANAGE EVERYTHING"]').style.display = 'block';
+                permissionsSelect.querySelector('option[value="MANAGE CERTAIN PROJECT"]').style.display = 'block';
+            } else if (selectedRole === 'MAIN CONTRACTOR') {
+                permissionsSelect.querySelector('option[value="VIEWING MODE OF THEIR PROJECT"]').style.display = 'block';
+            }
+        });
+
+        permissionsSelect.addEventListener('change', function () {
+            const role = roleSelect.value;
+            const permission = permissionsSelect.value;
+
+            if (role === 'ADMIN') {
+                projectSelect.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'none';
+                return;
+            }
+
+            if (role === 'MAIN CONTRACTOR' && permission === 'VIEWING MODE OF THEIR PROJECT') {
+                projectSelect.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects); // will render as radio buttons
+                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            } else if (permission === 'MANAGE EVERYTHING') {
+                projectSelect.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects);
+                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            } else if (permission === 'MANAGE CERTAIN PROJECT') {
+                projectSelect.style.display = 'none';
+                projectCheckboxesDiv.style.display = 'block';
+                renderProjectCheckboxes(allProjects);
+                projectCheckboxesDiv.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            } else {
+                projectSelect.style.display = 'block';
+                projectCheckboxesDiv.style.display = 'none';
+            }
+        });
+
+        function getSelectedProjects() {
+            if (projectCheckboxesDiv.style.display === 'block') {
+                const radios = projectCheckboxesDiv.querySelectorAll('input[name="projectRadio"]:checked');
+                if (radios.length > 0) {
+                    return [radios[0].value];
+                }
+                const checkboxes = projectCheckboxesDiv.querySelectorAll('input[name="projectCheckbox"]:checked');
+                return Array.from(checkboxes).map(cb => cb.value);
+            } else {
+                return [projectSelect.value];
+            }
+        }
+
+
+        function saveUserDetails() {
+            const userId = selectedRow ? selectedRow.getAttribute('data-user-id') : null;
+            const userData = {
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value,
+                permissions: document.getElementById('permissions').value,
+                project: getSelectedProjects().join(', '),
+                status: document.getElementById('status').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value
+            };
+
+            const url = userId ? `/userAdmin/updateUser/${userId}` : '/userAdmin/addUser';
+            const method = userId ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            })
+                .then(response => response.json())
+                .then(savedUser => {
+                    if (!userId) addRowToTable(savedUser);
+                    else updateRowInTable(savedUser);
+                    closeModal();
+                })
+                .catch(error => console.error('Error saving user:', error));
+        }
 
         function showAddUserModal() {
             selectedRow = null;
             document.getElementById('modalTitle').innerText = 'ADD NEW USER';
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('email').value = '';
             document.getElementById('role').value = '';
             document.getElementById('permissions').value = '';
-            document.getElementById('project').value = '';
             document.getElementById('status').value = '';
-            loadProjectsIntoDropdown(); // Load available projects
+            refreshProjectDropdown();
+            renderProjectCheckboxes(allProjects);
+            projectSelect.style.display = 'block';
+            projectCheckboxesDiv.style.display = 'none';
             document.getElementById('archiveBtn').style.display = 'none';
             showModal();
         }
@@ -813,10 +935,26 @@
                 document.getElementById('role').value = selectedRow.cells[2].innerText;
                 document.getElementById('permissions').value = selectedRow.cells[3].innerText;
                 document.getElementById('status').value = selectedRow.cells[5].innerText;
-                loadProjectsIntoDropdown(); // Load available projects
+                document.getElementById('firstName').value = selectedRow.dataset.firstName || '';
+                document.getElementById('lastName').value = selectedRow.dataset.lastName || '';
+                document.getElementById('phone').value = selectedRow.dataset.phone || '';
+                document.getElementById('email').value = selectedRow.dataset.email || '';
+
+
+                // Trigger change manually to update UI visibility
+                roleSelect.dispatchEvent(new Event('change'));
+
                 setTimeout(() => {
+                    permissionsSelect.value = selectedRow.cells[3].innerText;
+                    permissionsSelect.dispatchEvent(new Event('change'));
+
+                    const selectedProjects = selectedRow.cells[4].innerText.split(', ').map(p => p.trim());
+                    document.querySelectorAll('input[name="projectCheckbox"]').forEach(cb => {
+                        cb.checked = selectedProjects.includes(cb.value);
+                    });
                     document.getElementById('project').value = selectedRow.cells[4].innerText;
                 }, 200);
+
                 document.getElementById('archiveBtn').style.display = 'inline-block';
                 showModal();
             }
@@ -832,128 +970,61 @@
             document.getElementById('userModal').style.display = 'none';
         }
 
+        function addRowToTable(userData) {
+            const table = document.getElementById('userTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            const projectDisplay = userData.role === 'ADMIN' ? 'All Projects' : userData.project;
+
+            newRow.setAttribute('data-user-id', userData.userId);
+            newRow.setAttribute('data-first-name', userData.firstName || '');
+            newRow.setAttribute('data-last-name', userData.lastName || '');
+            newRow.setAttribute('data-phone', userData.phone || '');
+            newRow.setAttribute('data-email', userData.email || '');
+
+
+
+            newRow.innerHTML = `
+        <td>${userData.username}</td>
+        <td>********</td>
+        <td>${userData.role}</td>
+        <td>${userData.permissions}</td>
+        <td>${projectDisplay}</td>
+        <td>${userData.status}</td>
+    `;
+
+            newRow.addEventListener('click', () => {
+                document.querySelectorAll('#userTable tbody tr').forEach(r => r.classList.remove('selected'));
+                newRow.classList.add('selected');
+                selectedRow = newRow;
+                document.getElementById('archiveBtn').style.display = 'inline-block';
+            });
+        }
+
+
+        function updateRowInTable(updatedUser) {
+            if (selectedRow) {
+                selectedRow.cells[0].innerText = updatedUser.username;
+                selectedRow.cells[1].innerText = '********';
+                selectedRow.cells[2].innerText = updatedUser.role;
+                selectedRow.cells[3].innerText = updatedUser.permissions;
+                selectedRow.cells[4].innerText = updatedUser.project;
+                selectedRow.cells[5].innerText = updatedUser.status;
+            }
+        }
+
         function archiveUser() {
             if (selectedRow) {
-                selectedRow.style.display = 'none'; // Hide the selected row
+                selectedRow.style.display = 'none';
                 closeModal();
             }
         }
 
-        function saveUserDetails() {
-            const userId = selectedRow ? selectedRow.getAttribute('data-user-id') : null;
-
-            const userData = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
-                role: document.getElementById('role').value,
-                permissions: document.getElementById('permissions').value,
-                project: document.getElementById('project').value,
-                status: document.getElementById('status').value,
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                phone: document.getElementById('phone').value,
-                email: document.getElementById('email').value
-            };
-
-            if (userId) {
-                //Update existing user in the database
-                fetch(`/userAdmin/updateUser/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData)
-                })
-                    .then(response => response.json())
-                    .then(updatedUser => {
-                        console.log('User updated:', updatedUser);
-                        updateRowInTable(updatedUser); // ✅ Update UI table row
-                        closeModal();
-                    })
-                    .catch(error => console.error('Error updating user:', error));
-            } else {
-                // Add new user to the database
-                fetch('/userAdmin/addUser', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData)
-                })
-                    .then(response => response.json())
-                    .then(savedUser => {
-                        console.log('User added:', savedUser);
-                        addRowToTable(savedUser); // Add new row dynamically
-                        closeModal();
-                    })
-                    .catch(error => console.error('Error adding user:', error));
-            }
-        }
-
-
-            const userData = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
-                role: document.getElementById('role').value,
-                permissions: document.getElementById('permissions').value,
-                project: document.getElementById('project').value,
-                status: document.getElementById('status').value
-            };
-
-            if (userId) {
-                // Update existing user in the database
-                fetch(`/userAdmin/updateUser/${userId}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData)
-                })
-                    .then(response => response.json())
-                    .then(updatedUser => {
-                        console.log('User updated:', updatedUser);
-                        updateRowInTable(updatedUser); //  UI table row
-                        closeModal();
-                    })
-                    .catch(error => console.error('Error updating user:', error));
-            } else {
-                //Add new user to the database
-                fetch('/userAdmin/addUser', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(userData)
-                })
-                    .then(response => response.json())
-                    .then(savedUser => {
-                        console.log('User added:', savedUser);
-                        addRowToTable(savedUser); //Add new row dynamically
-                        closeModal();
-                    })
-                    .catch(error => console.error('Error adding user:', error));
-            }
-
-
-        if (selectedRow) {
-            //  Update the selected row with new data
-            selectedRow.cells[0].innerText = userData.username;
-            selectedRow.cells[1].innerText = userData.password;
-            selectedRow.cells[2].innerText = userData.role;
-            selectedRow.cells[3].innerText = userData.permissions;
-            selectedRow.cells[4].innerText = userData.project;
-            selectedRow.cells[5].innerText = userData.status;
-        } else {
-            //do nothing
-        }
-
-        closeModal();
-
-
         let sidebar = document.querySelector(".sidebar");
         let closeBtn = document.querySelector("#btn");
-        let searchBtn = document.querySelector(".bx-search");
 
         closeBtn.addEventListener("click", () => {
             sidebar.classList.toggle("open");
         });
-
-        // searchBtn.addEventListener("click", () => {
-        //     sidebar.classList.toggle("open");
-        // }
-        // );
     </script>
 </section>
 </body>

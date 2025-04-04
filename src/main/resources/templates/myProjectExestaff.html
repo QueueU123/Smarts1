@@ -934,9 +934,12 @@
         <div class="upper">
             <h1>MY PROJECTS</h1>
             <div id="dropdown" class="functionality">
-                <select id="sortCriteria">
-                    <option value="project1">Residential Building Construction</option>
-                    <option value="project5">Shopping Mall and Retail Center</option>
+                <select id="projectSelect" onchange="updateProjectDetails()">
+                    <option value="" disabled selected>Choose a project</option>
+                    <option th:each="project : ${projects}"
+                            th:value="${project.projectname}"
+                            th:text="${project.projectname}">
+                    </option>
                 </select>
             </div>
         </div>
@@ -944,19 +947,20 @@
         <div class="materials-container">
             <div class="project-details">
                 <div>
-                    <h2><strong>Project:</strong> Residential Building Construction</h2>
-                    <p><strong>Location:</strong> Mandaluyong, Manila</p>
+                    <h2><strong>Project:</strong> <span id="projectName">---</span></h2>
+                    <p><strong>Location:</strong> <span id="projectLocation">---</span></p>
                 </div>
                 <div class="b">
-                    <h2><strong>Company:</strong> ABC Builders Inc.</h2>
-                    <p><strong>Contact:</strong> 0912 345 6789</p>
+                    <h2><strong>Company:</strong> <span id="projectCompany">---</span></h2>
+                    <p><strong>Contact:</strong> <span id="projectContact">---</span></p>
                 </div>
             </div>
+
 
             <h2 style="text-align: center; color: #F9744B; font-weight: bold; font-family: 'Fredoka';">PROJECT
                 MATERIALS OVERVIEW</h2>
             <div class="materials-table">
-                
+
 
                 <table id="materialsTable">
                     <thead>
@@ -1042,10 +1046,6 @@
             <div class="modal-content">
                 <h3>Edit Project Progress</h3>
 
-                <select id="projectSelect" name="projectSelect">
-                    <option value="project1">Residential Building Construction</option>
-                    <option value="project5">Shopping Mall and Retail Center</option>
-                </select>
 
                 <div class="stage-container">
                     <!-- Stage 1 -->
@@ -1105,6 +1105,11 @@
     <footer>
         <p><span>Designed By <span style="color: black;">SMARTS Members</span></span> <span>© Copyright 2025</span></p>
     </footer>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const projectData = /*[[${projects}]]*/ [];
+        /*]]>*/
+    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -1300,6 +1305,17 @@
             });
 
         });
+
+        function updateProjectDetails() {
+            const selectedName = document.getElementById("projectSelect").value;
+            const selected = projectData.find(p => p.projectname === selectedName);
+            if (selected) {
+                document.getElementById("projectName").textContent = selected.projectname;
+                document.getElementById("projectLocation").textContent = selected.companyLocation;
+                document.getElementById("projectCompany").textContent = selected.companyname;
+                document.getElementById("projectContact").textContent = selected.companycontact;
+            }
+        }
 
         // function to add a task
         function addTask(stage) {
